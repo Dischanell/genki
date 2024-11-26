@@ -1,0 +1,63 @@
+:root {
+	--color-background: #131314;
+	--color-text: #e3e3e3;
+}
+
+html {
+	font-size: 16px;
+	font-weight: 200;
+	font-family: system-ui;
+}
+
+body {
+	color: var(--color-text);
+	background-color: var(--color-background);
+	line-height: 1.5;
+}
+
+h1 {
+	font-weight: 400;
+	font-size: 3rem;
+}
+
+h2 {
+	font-weight: 300;
+	font-size: 2.5rem;
+}
+
+h3 {
+	font-weight: 200;
+	font-size: 2rem;
+}
+
+p {
+  font-weight: 200;
+  font-size: 1rem;
+}
+
+input, button {
+	text-align: center;
+	font-size: 1.2rem;
+	border: 0px;
+	border-radius: .3rem;
+	padding: .5rem 1rem;
+}
+
+input {
+	outline: none;
+}
+
+button {
+	font-family: system-ui;
+	cursor: pointer;
+}
+
+a {
+	text-decoration: none;
+}
+
+.sr-only {
+	position: absolute;
+	overflow: hidden;
+	visibility: hidden;
+}
