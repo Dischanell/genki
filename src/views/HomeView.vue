@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { katakana } from '@/katakana';
 
 const shuffledKatakana = katakana.sort((a, b) => .5 - Math.random())
-let currentCharacterIndex = ref(0)
+const currentCharacterIndex = ref(0)
 
 const answerInput = ref('')
 const correctAnswers = ref<{kana: string, romaji: string}[]>([])
@@ -26,20 +26,49 @@ const checkAnswer = () => {
 
 <template>
 	<main>
-		<div v-if="currentCharacterIndex < shuffledKatakana.length">
-			<h3>{{ currentCharacter.kana }}</h3>
-			<input type="text" v-model="answerInput" @keydown.enter="checkAnswer()" autofocus>
-		</div>
-		<div v-else>
-			<h2>Quiz Complete!</h2>
-			<h2 v-if="incorrectAnswers.length === 0">おめでとうございます! You have mastered Katakana.</h2>
-			<p>{{ `${correctAnswers.length}/${shuffledKatakana.length} correct answers.` }}</p>
-			<div v-if="incorrectAnswers.length > 0">
-				<p>Incorrect Answers:</p>
-				<ul>
-					<li v-for="char in incorrectAnswers" :key="char.kana">{{ char.kana }}: {{ char.romaji }}</li>
-				</ul>
+		<div class="container">
+			<div v-if="currentCharacterIndex < shuffledKatakana.length" class="input-container">
+				<h3>{{ currentCharacter.kana }}</h3>
+				<input type="text" v-model="answerInput" @keydown.enter="checkAnswer()" autofocus>
+			</div>
+			<div v-else>
+				<h2>Quiz Complete!</h2>
+				<h2 v-if="incorrectAnswers.length === 0">おめでとうございます! You have mastered Katakana.</h2>
+				<p>{{ `${correctAnswers.length}/${shuffledKatakana.length} correct answers.` }}</p>
+				<div v-if="incorrectAnswers.length > 0">
+					<p>Incorrect Answers:</p>
+					<ul>
+						<li v-for="char in incorrectAnswers" :key="char.kana">{{ char.kana }}: {{ char.romaji }}</li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</main>
 </template>
+
+<style scoped>
+.container{
+	margin: 2rem;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.input-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+}
+
+input {
+	background-color: #ffffffcc;
+	color: black;
+}
+
+input:focus {
+	background-color: transparent;
+	color: white;
+}
+</style>
