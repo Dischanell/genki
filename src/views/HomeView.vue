@@ -2,23 +2,35 @@
 import { ref, computed } from 'vue'
 import { katakana } from '@/katakana';
 
-const shuffledKatakana = katakana.sort((a, b) => .5 - Math.random())
-const currentCharacterIndex = ref(0)
+interface KatakanaCharacter {
+	kana: string
+	romaji: string
+}
 
 const answerInput = ref('')
-const correctAnswers = ref<{kana: string, romaji: string}[]>([])
-const incorrectAnswers = ref<{kana: string, romaji: string}[]>([])
+const correctAnswers = ref<KatakanaCharacter[]>([])
+const incorrectAnswers = ref<KatakanaCharacter[]>([])
 
+const currentCharacterIndex = ref(0)
 const currentCharacter = computed(() => shuffledKatakana[currentCharacterIndex.value])
+
+const shuffleArray = (array: KatakanaCharacter[]) => {
+	for (let i = array.length -1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1))
+		;[array[i], array[j]] = [array[j], array[i]]
+	}
+
+	return array
+}
+
+const shuffledKatakana = shuffleArray(katakana)
 
 const checkAnswer = () => {
 	if (!answerInput.value.trim()) return // Prevent checking the answer if input is empty
 
-	if (answerInput.value.toLowerCase() === currentCharacter.value.romaji) {
-		correctAnswers.value.push(currentCharacter.value)
-	} else {
-		incorrectAnswers.value.push(currentCharacter.value)
-	}
+	const isCorrect = answerInput.value.toLowerCase() === currentCharacter.value.romaji
+	;(isCorrect ? correctAnswers : incorrectAnswers).value.push(currentCharacter.value)
+
 	currentCharacterIndex.value++
 	answerInput.value = ''
 }
