@@ -1,20 +1,33 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { katakana } from '@/katakana';
+import { hiragana } from '@/hiragana'
+import { katakana } from '@/katakana'
 
-interface KatakanaCharacter {
+interface Kana {
 	kana: string
 	romaji: string
 }
 
 const answerInput = ref('')
-const correctAnswers = ref<KatakanaCharacter[]>([])
-const incorrectAnswers = ref<KatakanaCharacter[]>([])
+const correctAnswers = ref<Kana[]>([])
+const incorrectAnswers = ref<Kana[]>([])
+
+const enableHiragana = ref(true)
+const enableKatakana = ref(false)
+const enabledCharacters = computed(() => [...(enableHiragana.value ? hiragana : []), ...(enableKatakana.value ? katakana : [])])
+const shuffledCharacters = ref<Kana[]>([])
 
 const currentCharacterIndex = ref(0)
-const currentCharacter = computed(() => shuffledKatakana[currentCharacterIndex.value])
+const currentCharacter = computed(() => shuffledCharacters.value[currentCharacterIndex.value])
 
-const shuffleArray = (array: KatakanaCharacter[]) => {
+const startPractice = () => {
+	shuffledCharacters.value = shuffleArray(enabledCharacters.value)
+	currentCharacterIndex.value = 0
+	correctAnswers.value = []
+	incorrectAnswers.value = []
+}
+
+const shuffleArray = (array: Kana[]) => {
 	for (let i = array.length -1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1))
 		;[array[i], array[j]] = [array[j], array[i]]
@@ -23,12 +36,10 @@ const shuffleArray = (array: KatakanaCharacter[]) => {
 	return array
 }
 
-const shuffledKatakana = shuffleArray(katakana)
-
 const checkAnswer = () => {
 	if (!answerInput.value.trim()) return // Prevent checking the answer if input is empty
 
-	const isCorrect = answerInput.value.toLowerCase() === currentCharacter.value.romaji
+	const isCorrect = answerInput.value.trim().toLowerCase() === currentCharacter.value.romaji
 	;(isCorrect ? correctAnswers : incorrectAnswers).value.push(currentCharacter.value)
 
 	currentCharacterIndex.value++
@@ -39,14 +50,14 @@ const checkAnswer = () => {
 <template>
 	<main>
 		<div class="container">
-			<div v-if="currentCharacterIndex < shuffledKatakana.length" class="input-container">
+			<div v-if="currentCharacterIndex < shuffledCharacters.length" class="input-container">
 				<h3>{{ currentCharacter.kana }}</h3>
 				<input type="text" v-model="answerInput" @keydown.enter="checkAnswer()" autofocus>
 			</div>
 			<div v-else>
 				<h2>Quiz Complete!</h2>
-				<h2 v-if="incorrectAnswers.length === 0">おめでとうございます! You have mastered Katakana.</h2>
-				<p>{{ `${correctAnswers.length}/${shuffledKatakana.length} correct answers.` }}</p>
+				<h2 v-if="incorrectAnswers.length === 0">おめでとうございます!</h2>
+				<p>{{ `${correctAnswers.length}/${shuffledCharacters.length} correct answers.` }}</p>
 				<div v-if="incorrectAnswers.length > 0">
 					<p>Incorrect Answers:</p>
 					<ul>
@@ -54,6 +65,13 @@ const checkAnswer = () => {
 					</ul>
 				</div>
 			</div>
+			<div>
+				<input type="checkbox" id="hiragana" v-model="enableHiragana">
+				<label for="hiragana">Hiragana</label>
+				<input type="checkbox" id="katakana" v-model="enableKatakana">
+				<label for="katakana">Katakana</label>
+			</div>
+			<button @click="startPractice()">Start Practice</button>
 		</div>
 	</main>
 </template>
